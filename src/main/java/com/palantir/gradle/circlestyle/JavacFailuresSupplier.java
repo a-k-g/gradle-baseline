@@ -3,12 +3,12 @@ package com.palantir.gradle.circlestyle;
 import static java.lang.Integer.parseInt;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.gradle.api.logging.LoggingManager;
 import org.gradle.api.logging.StandardOutputListener;
 import org.gradle.api.tasks.compile.JavaCompile;
 
@@ -23,7 +23,7 @@ class JavacFailuresSupplier implements FailuresSupplier {
                 errorStream.append(output);
             }
         };
-        javac.getLogging().addStandardErrorListener(listener);
+        ((LoggingManager) javac.getLogging()).addStandardErrorListener(listener);
 
         // Configure the finalizer task
         return new JavacFailuresSupplier(errorStream);
@@ -38,7 +38,7 @@ class JavacFailuresSupplier implements FailuresSupplier {
     }
 
     @Override
-    public List<Failure> getFailures() throws IOException {
+    public List<Failure> getFailures() {
         List<Failure> failures = new ArrayList<>();
         Failure.Builder failureBuilder = null;
         StringBuilder details = null;
@@ -67,5 +67,10 @@ class JavacFailuresSupplier implements FailuresSupplier {
             failures.add(failureBuilder.details(details.toString()).build());
         }
         return failures;
+    }
+
+    @Override
+    public RuntimeException handleInternalFailure(File reportDir, RuntimeException e) {
+        return e;
     }
 }
