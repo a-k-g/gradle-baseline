@@ -1,0 +1,20 @@
+apply from: "${rootDir}/gradle/publish-libs.gradle"
+apply from: "${rootDir}/gradle/java.gradle"
+
+dependencies {
+  compile gradleApi()
+
+  processor 'org.inferred:freebuilder:1.14.6'
+
+  testCompile gradleTestKit()
+  testCompile 'com.github.stefanbirkner:system-rules'
+  testCompile 'com.google.guava:guava'
+  testCompile 'junit:junit'
+  testCompile 'org.assertj:assertj-core'
+  testCompile 'org.mockito:mockito-core'
+  testCompile 'me.nallar.whocalled:WhoCalled'
+}
+
+// Extra validation steps
+tasks.check.dependsOn tasks.javadoc
+

@@ -18,7 +18,6 @@ package com.palantir.baseline
 
 
 import com.palantir.baseline.plugins.BaselineCircleCi
-import com.palantir.gradle.circlestyle.CircleStylePlugin
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
@@ -35,11 +34,6 @@ class BaselineCircleCiTest extends Specification {
     def baselineCircleCiApplied() {
         expect:
         project.plugins.hasPlugin(BaselineCircleCi.class)
-    }
-
-    def circleStylePluginApplied() {
-        expect:
-        project.plugins.hasPlugin(CircleStylePlugin.class)
     }
 
 }
