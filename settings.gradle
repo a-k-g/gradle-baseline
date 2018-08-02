@@ -1,3 +1,5 @@
 include "baseline-error-prone"
 include "gradle-baseline-java"
 include "gradle-baseline-java-config"
+include "gradle-circle-style"
+

@@ -1,0 +1,15 @@
+apply plugin: 'java-gradle-plugin'
+apply from: "${rootDir}/gradle/publish-libs.gradle"
+apply from: "${rootDir}/gradle/java.gradle"
+
+dependencies {
+  compile gradleApi()
+
+  processor 'org.inferred:freebuilder'
+
+  testCompile gradleTestKit()
+  testCompile 'com.google.guava:guava'
+  testCompile 'junit:junit'
+  testCompile 'org.assertj:assertj-core'
+  testCompile 'org.mockito:mockito-core'
+}
