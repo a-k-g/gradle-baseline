@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Palantir Technologies, Inc.
+ * (c) Copyright 2015 Palantir Technologies Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,15 @@
 
 package com.palantir.baseline.plugins;
 
-import com.google.common.collect.ImmutableList;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
-import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.AppliedPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.quality.Checkstyle;
 import org.gradle.api.plugins.quality.CheckstyleExtension;
 import org.gradle.api.plugins.quality.CheckstylePlugin;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.external.javadoc.StandardJavadocDocletOptions;
-import org.gradle.plugins.ide.eclipse.EclipsePlugin;
 import org.gradle.plugins.ide.eclipse.model.EclipseModel;
 import org.gradle.plugins.ide.eclipse.model.EclipseProject;
 
