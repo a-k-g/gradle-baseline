@@ -1,0 +1,89 @@
+/*
+ * Copyright 2015 Palantir Technologies, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.palantir.baseline.plugins;
+
+import com.google.common.collect.ImmutableList;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
+import org.gradle.api.Action;
+import org.gradle.api.Project;
+import org.gradle.api.plugins.AppliedPlugin;
+import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.quality.Checkstyle;
+import org.gradle.api.plugins.quality.CheckstyleExtension;
+import org.gradle.api.plugins.quality.CheckstylePlugin;
+import org.gradle.api.tasks.javadoc.Javadoc;
+import org.gradle.external.javadoc.StandardJavadocDocletOptions;
+import org.gradle.plugins.ide.eclipse.EclipsePlugin;
+import org.gradle.plugins.ide.eclipse.model.EclipseModel;
+import org.gradle.plugins.ide.eclipse.model.EclipseProject;
+
+/**
+ * Configures the Gradle "checkstyle" task with Baseline settings.
+ */
+public final class BaselineCheckstyle extends AbstractBaselinePlugin {
+
+    private static final String DEFAULT_CHECKSTYLE_VERSION = "8.11";
+
+    public void apply(Project project) {
+        this.project = project;
+
+        project.getPluginManager().apply(CheckstylePlugin.class);
+
+        // Set default version (outside afterEvaluate so it can be overridden).
+        project.getExtensions().configure(CheckstyleExtension.class,
+                ext -> ext.setToolVersion(DEFAULT_CHECKSTYLE_VERSION));
+
+        // We use the "JavadocMethod" module in our Checkstyle configuration, making
+        // Java 8+ new doclint compiler feature redundant.
+        project.getTasks().withType(Javadoc.class, javadoc -> {
+            if (project.getConvention().getPlugin(JavaPluginConvention.class)
+                    .getSourceCompatibility().isJava8Compatible()) {
+                javadoc.options(minimalJavadocOptions -> ((StandardJavadocDocletOptions) minimalJavadocOptions)
+                        .addStringOption("Xdoclint:none", "-quiet"));
+            }
+        });
+
+        configureCheckstyle();
+        configureCheckstyleForEclipse();
+    }
+
+    private void configureCheckstyle() {
+        // Configure checkstyle
+        project.getExtensions().getByType(CheckstyleExtension.class)
+                .setConfigDir(project.file(Paths.get(getConfigDir(), "checkstyle").toString()));
+        project.getTasks().withType(Checkstyle.class, checkstyle -> {
+            // Make checkstyle include files in src/main/resources and src/test/resources, e.g., for whitespace checks.
+            checkstyle.source("src/main/resources");
+            checkstyle.source("src/test/resources");
+            // These sources are only checked by gradle, NOT by Eclipse.
+            Stream.of("checks", "manifests", "scripts", "templates").forEach(checkstyle::source);
+            // Make sure java files are still included. This should match list in etc/eclipse-template/.checkstyle.
+            // Currently not enforced, but could be eventually.
+            Stream.of("java", "cfg", "coffee", "erb", "groovy", "handlebars", "json", "less", "pl", "pp", "sh", "xml")
+                    .forEach(extension -> checkstyle.include("**/*." + extension));
+        });
+    }
+
+    private void configureCheckstyleForEclipse() {
+        project.getPluginManager().withPlugin("eclipse", appliedPlugin -> {
+            EclipseProject eclipseProject = project.getExtensions().getByType(EclipseModel.class).getProject();
+            eclipseProject.buildCommand("net.sf.eclipsecs.core.CheckstyleBuilder");
+            eclipseProject.natures("net.sf.eclipsecs.core.CheckstyleNature");
+        });
+    }
+}
