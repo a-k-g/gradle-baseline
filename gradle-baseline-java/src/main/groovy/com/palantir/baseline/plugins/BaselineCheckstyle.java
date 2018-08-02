@@ -35,6 +35,7 @@ public final class BaselineCheckstyle extends AbstractBaselinePlugin {
 
     private static final String DEFAULT_CHECKSTYLE_VERSION = "8.11";
 
+    @Override
     public void apply(Project project) {
         this.project = project;
 
@@ -46,13 +47,12 @@ public final class BaselineCheckstyle extends AbstractBaselinePlugin {
 
         // We use the "JavadocMethod" module in our Checkstyle configuration, making
         // Java 8+ new doclint compiler feature redundant.
-        project.getTasks().withType(Javadoc.class, javadoc -> {
-            if (project.getConvention().getPlugin(JavaPluginConvention.class)
-                    .getSourceCompatibility().isJava8Compatible()) {
-                javadoc.options(minimalJavadocOptions -> ((StandardJavadocDocletOptions) minimalJavadocOptions)
-                        .addStringOption("Xdoclint:none", "-quiet"));
-            }
-        });
+        if (project.getConvention().getPlugin(JavaPluginConvention.class)
+                .getSourceCompatibility().isJava8Compatible()) {
+            project.getTasks().withType(Javadoc.class, javadoc ->
+                    javadoc.options(javadocOptions -> ((StandardJavadocDocletOptions) javadocOptions)
+                            .addStringOption("Xdoclint:none", "-quiet")));
+        }
 
         configureCheckstyle();
         configureCheckstyleForEclipse();
@@ -64,8 +64,9 @@ public final class BaselineCheckstyle extends AbstractBaselinePlugin {
                 .setConfigDir(project.file(Paths.get(getConfigDir(), "checkstyle").toString()));
         project.getTasks().withType(Checkstyle.class, checkstyle -> {
             // Make checkstyle include files in src/main/resources and src/test/resources, e.g., for whitespace checks.
-            checkstyle.source("src/main/resources");
-            checkstyle.source("src/test/resources");
+            project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+                    .forEach(sourceSet -> sourceSet.getResources().getSrcDirs()
+                            .forEach(resourceDir -> checkstyle.source(resourceDir.toString())));
             // These sources are only checked by gradle, NOT by Eclipse.
             Stream.of("checks", "manifests", "scripts", "templates").forEach(checkstyle::source);
             // Make sure java files are still included. This should match list in etc/eclipse-template/.checkstyle.
