@@ -46,7 +46,6 @@ class BaselineCheckstyleTest extends Specification {
         when:
         project.plugins.apply 'eclipse'
         project.plugins.apply BaselineEclipse
-        project.plugins.findPlugin(BaselineCheckstyle).configureCheckstyleForEclipse()
 
         then:
         project.eclipse.project.natures.contains("net.sf.eclipsecs.core.CheckstyleNature")

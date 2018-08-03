@@ -45,26 +45,21 @@ public final class BaselineCheckstyle extends AbstractBaselinePlugin {
         project.getExtensions().configure(CheckstyleExtension.class,
                 ext -> ext.setToolVersion(DEFAULT_CHECKSTYLE_VERSION));
 
+        JavaPluginConvention javaConvention = this.project.getConvention().getPlugin(JavaPluginConvention.class);
         // We use the "JavadocMethod" module in our Checkstyle configuration, making
         // Java 8+ new doclint compiler feature redundant.
-        if (project.getConvention().getPlugin(JavaPluginConvention.class)
-                .getSourceCompatibility().isJava8Compatible()) {
+        if (javaConvention.getSourceCompatibility().isJava8Compatible()) {
             project.getTasks().withType(Javadoc.class, javadoc ->
                     javadoc.options(javadocOptions -> ((StandardJavadocDocletOptions) javadocOptions)
                             .addStringOption("Xdoclint:none", "-quiet")));
         }
 
-        configureCheckstyle();
-        configureCheckstyleForEclipse();
-    }
-
-    private void configureCheckstyle() {
         // Configure checkstyle
         project.getExtensions().getByType(CheckstyleExtension.class)
-                .setConfigDir(project.file(Paths.get(getConfigDir(), "checkstyle").toString()));
+                .setConfigDir(this.project.file(Paths.get(getConfigDir(), "checkstyle").toString()));
         project.getTasks().withType(Checkstyle.class, checkstyle -> {
             // Make checkstyle include files in src/main/resources and src/test/resources, e.g., for whitespace checks.
-            project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+            javaConvention.getSourceSets()
                     .forEach(sourceSet -> sourceSet.getResources().getSrcDirs()
                             .forEach(resourceDir -> checkstyle.source(resourceDir.toString())));
             // These sources are only checked by gradle, NOT by Eclipse.
@@ -74,13 +69,12 @@ public final class BaselineCheckstyle extends AbstractBaselinePlugin {
             Stream.of("java", "cfg", "coffee", "erb", "groovy", "handlebars", "json", "less", "pl", "pp", "sh", "xml")
                     .forEach(extension -> checkstyle.include("**/*." + extension));
         });
-    }
 
-    private void configureCheckstyleForEclipse() {
-        project.getPluginManager().withPlugin("eclipse", appliedPlugin -> {
-            EclipseProject eclipseProject = project.getExtensions().getByType(EclipseModel.class).getProject();
+        project.getPluginManager().withPlugin("eclipse", plugin -> {
+            EclipseProject eclipseProject = this.project.getExtensions().getByType(EclipseModel.class).getProject();
             eclipseProject.buildCommand("net.sf.eclipsecs.core.CheckstyleBuilder");
             eclipseProject.natures("net.sf.eclipsecs.core.CheckstyleNature");
         });
     }
+
 }
