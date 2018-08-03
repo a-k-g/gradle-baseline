@@ -22,5 +22,5 @@ import java.util.List;
 interface FailuresSupplier {
     List<Failure> getFailures() throws IOException;
 
-    RuntimeException handleInternalFailure(Path reportDir, RuntimeException e);
+    RuntimeException handleInternalFailure(Path reportDir, RuntimeException ex);
 }

@@ -77,7 +77,7 @@ public class CircleStyleFinalizerTests {
 
         checkstyle.setDidWork(false);
 
-        StyleTaskTimer timer = mock(StyleTaskTimer.class);
+        TaskTimer timer = mock(TaskTimer.class);
         when(timer.getTaskTimeNanos(checkstyle)).thenReturn(FAILED_CHECKSTYLE_TIME_NANOS);
 
         File targetFile = new File(projectDir.getRoot(), "reports/report.xml");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Palantir Technologies, Inc.
+ * (c) Copyright 2017 Palantir Technologies Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package com.palantir.gradle.circlestyle;
 
 import java.io.File;
-
 import org.inferred.freebuilder.FreeBuilder;
 
 @FreeBuilder
@@ -30,7 +29,7 @@ interface Failure {
     String details();
 
     class Builder extends Failure_Builder {
-        public Builder() {
+        Builder() {
             source("");
             details("");
         }

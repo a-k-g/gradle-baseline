@@ -29,7 +29,7 @@ import org.gradle.api.Task;
 import org.gradle.api.tasks.TaskAction;
 import org.w3c.dom.Document;
 
-public final class CircleStyleFinalizer extends DefaultTask {
+public class CircleStyleFinalizer extends DefaultTask {
 
     public static void registerFinalizer(
             Task task,
@@ -61,50 +61,50 @@ public final class CircleStyleFinalizer extends DefaultTask {
     private Path reportDir;
 
     @Inject
-    CircleStyleFinalizer() { }
+    public CircleStyleFinalizer() { }
 
-    public Task getStyleTask() {
+    public final Task getStyleTask() {
         return styleTask;
     }
 
-    public void setStyleTask(Task styleTask) {
+    public final void setStyleTask(Task styleTask) {
         this.styleTask = styleTask;
     }
 
-    public TaskTimer getTaskTimer() {
+    public final TaskTimer getTaskTimer() {
         return taskTimer;
     }
 
-    public void setTaskTimer(TaskTimer taskTimer) {
+    public final void setTaskTimer(TaskTimer taskTimer) {
         this.taskTimer = taskTimer;
     }
 
-    public FailuresSupplier getFailuresSupplier() {
+    public final FailuresSupplier getFailuresSupplier() {
         return failuresSupplier;
     }
 
-    public void setFailuresSupplier(FailuresSupplier failuresSupplier) {
+    public final void setFailuresSupplier(FailuresSupplier failuresSupplier) {
         this.failuresSupplier = failuresSupplier;
     }
 
-    public File getTargetFile() {
+    public final File getTargetFile() {
         return targetFile;
     }
 
-    public void setTargetFile(File targetFile) {
+    public final void setTargetFile(File targetFile) {
         this.targetFile = targetFile;
     }
 
-    public Path getReportDir() {
+    public final Path getReportDir() {
         return reportDir;
     }
 
-    public void setReportDir(Path reportDir) {
+    public final void setReportDir(Path reportDir) {
         this.reportDir = reportDir;
     }
 
     @TaskAction
-    public void createCircleReport() throws IOException, TransformerException {
+    public final void createCircleReport() throws IOException, TransformerException {
         if (!styleTask.getDidWork()) {
             setDidWork(false);
             return;

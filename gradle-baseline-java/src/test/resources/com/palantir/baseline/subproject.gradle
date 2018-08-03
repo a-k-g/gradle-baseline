@@ -14,34 +14,32 @@
  * limitations under the License.
  */
 
-package com.palantir.gradle.circlestyle
-
 plugins {
-  id 'java'
-  id 'checkstyle'
-  id 'findbugs'
+    id 'java'
+    id 'checkstyle'
+    id 'findbugs'
 }
 
 repositories {
-  mavenCentral()
+    jcenter()
 }
 
 sourceCompatibility = 1.7
 
 dependencies {
-  testCompile 'junit:junit:4.12'
-  testCompile 'org.assertj:assertj-core:2.9.0'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core:3.10.0'
 }
 
 tasks.withType(Checkstyle) {
-  reports {
-    xml.enabled = false
-    html.enabled = true
-  }
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
 }
 
 task failingTask {
-  doLast {
-    throw new RuntimeException("This task will always fail")
-  }
+    doLast {
+        throw new RuntimeException("This task will always fail")
+    }
 }

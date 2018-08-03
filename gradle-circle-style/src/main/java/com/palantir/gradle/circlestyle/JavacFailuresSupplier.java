@@ -15,6 +15,7 @@
  */
 package com.palantir.gradle.circlestyle;
 
+import com.google.common.base.Splitter;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -22,7 +23,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.gradle.api.tasks.compile.JavaCompile;
-import org.gradle.internal.impldep.com.google.common.base.Splitter;
 
 public final class JavacFailuresSupplier implements FailuresSupplier {
 

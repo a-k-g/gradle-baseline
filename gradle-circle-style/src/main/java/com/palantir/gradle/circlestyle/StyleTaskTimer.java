@@ -18,7 +18,6 @@ package com.palantir.gradle.circlestyle;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gradle.api.Task;
-import org.gradle.api.execution.TaskExecutionListener;
 import org.gradle.api.plugins.quality.Checkstyle;
 import org.gradle.api.plugins.quality.FindBugs;
 import org.gradle.api.tasks.TaskState;
