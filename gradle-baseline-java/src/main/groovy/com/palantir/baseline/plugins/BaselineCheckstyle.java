@@ -42,8 +42,8 @@ public final class BaselineCheckstyle extends AbstractBaselinePlugin {
         project.getPluginManager().apply(CheckstylePlugin.class);
 
         // Set default version (outside afterEvaluate so it can be overridden).
-        project.getExtensions().configure(CheckstyleExtension.class,
-                ext -> ext.setToolVersion(DEFAULT_CHECKSTYLE_VERSION));
+        project.getExtensions()
+                .configure(CheckstyleExtension.class, ext -> ext.setToolVersion(DEFAULT_CHECKSTYLE_VERSION));
 
         JavaPluginConvention javaConvention = this.project.getConvention().getPlugin(JavaPluginConvention.class);
         // We use the "JavadocMethod" module in our Checkstyle configuration, making
