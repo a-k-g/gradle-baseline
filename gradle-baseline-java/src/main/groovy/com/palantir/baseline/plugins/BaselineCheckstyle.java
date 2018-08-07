@@ -66,7 +66,7 @@ public final class BaselineCheckstyle extends AbstractBaselinePlugin {
                 // Make sure java files are still included. This should match list in etc/eclipse-template/.checkstyle.
                 // Currently not enforced, but could be eventually.
                 Stream.of(
-                        "java", "cfg", "coffee", "erb", "groovy", "handlebars","json", "less","pl", "pp", "sh", "xml")
+                        "java", "cfg", "coffee", "erb", "groovy", "handlebars", "json", "less", "pl", "pp", "sh", "xml")
                         .forEach(extension -> checkstyle.include("**/*." + extension));
             });
         });
