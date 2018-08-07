@@ -45,31 +45,32 @@ public final class BaselineCheckstyle extends AbstractBaselinePlugin {
         project.getExtensions()
                 .configure(CheckstyleExtension.class, ext -> ext.setToolVersion(DEFAULT_CHECKSTYLE_VERSION));
 
-        JavaPluginConvention javaConvention = this.project.getConvention().getPlugin(JavaPluginConvention.class);
-        // We use the "JavadocMethod" module in our Checkstyle configuration, making
-        // Java 8+ new doclint compiler feature redundant.
-        if (javaConvention.getSourceCompatibility().isJava8Compatible()) {
-            project.getTasks().withType(Javadoc.class, javadoc ->
-                    javadoc.options(javadocOptions -> ((StandardJavadocDocletOptions) javadocOptions)
-                            .addStringOption("Xdoclint:none", "-quiet")));
-        }
-
         // Configure checkstyle
-        project.getExtensions().getByType(CheckstyleExtension.class)
-                .setConfigDir(this.project.file(Paths.get(getConfigDir(), "checkstyle").toString()));
-        project.getTasks().withType(Checkstyle.class, checkstyle -> {
-            // Make checkstyle include files in src/main/resources and src/test/resources, e.g., for whitespace checks.
-            javaConvention.getSourceSets()
-                    .forEach(sourceSet -> sourceSet.getResources().getSrcDirs()
-                            .forEach(resourceDir -> checkstyle.source(resourceDir.toString())));
-            // These sources are only checked by gradle, NOT by Eclipse.
-            Stream.of("checks", "manifests", "scripts", "templates").forEach(checkstyle::source);
-            // Make sure java files are still included. This should match list in etc/eclipse-template/.checkstyle.
-            // Currently not enforced, but could be eventually.
-            Stream.of("java", "cfg", "coffee", "erb", "groovy", "handlebars", "json", "less", "pl", "pp", "sh", "xml")
-                    .forEach(extension -> checkstyle.include("**/*." + extension));
+        project.getPluginManager().withPlugin("java", plugin -> {
+            JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
+            // We use the "JavadocMethod" module in our Checkstyle configuration, making
+            // Java 8+ new doclint compiler feature redundant.
+            if (javaConvention.getSourceCompatibility().isJava8Compatible()) {
+                project.getTasks().withType(Javadoc.class, javadoc ->
+                        javadoc.options(javadocOptions -> ((StandardJavadocDocletOptions) javadocOptions)
+                                .addStringOption("Xdoclint:none", "-quiet")));
+            }
+            project.getTasks().withType(Checkstyle.class, checkstyle -> {
+                // Make checkstyle include files in src/main/resources and src/test/resources, e.g., for whitespace checks.
+                javaConvention.getSourceSets()
+                        .forEach(sourceSet -> sourceSet.getResources().getSrcDirs()
+                                .forEach(resourceDir -> checkstyle.source(resourceDir.toString())));
+                // These sources are only checked by gradle, NOT by Eclipse.
+                Stream.of("checks", "manifests", "scripts", "templates").forEach(checkstyle::source);
+                // Make sure java files are still included. This should match list in etc/eclipse-template/.checkstyle.
+                // Currently not enforced, but could be eventually.
+                Stream.of("java", "cfg", "coffee", "erb", "groovy", "handlebars", "json", "less", "pl", "pp", "sh", "xml")
+                        .forEach(extension -> checkstyle.include("**/*." + extension));
+            });
         });
 
+        project.getExtensions().getByType(CheckstyleExtension.class)
+                .setConfigDir(this.project.file(Paths.get(getConfigDir(), "checkstyle").toString()));
         project.getPluginManager().withPlugin("eclipse", plugin -> {
             EclipseProject eclipseProject = project.getExtensions().getByType(EclipseModel.class).getProject();
             eclipseProject.buildCommand("net.sf.eclipsecs.core.CheckstyleBuilder");
