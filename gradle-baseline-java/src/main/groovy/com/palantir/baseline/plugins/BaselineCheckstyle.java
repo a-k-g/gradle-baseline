@@ -56,7 +56,8 @@ public final class BaselineCheckstyle extends AbstractBaselinePlugin {
                                 .addStringOption("Xdoclint:none", "-quiet")));
             }
             project.getTasks().withType(Checkstyle.class, checkstyle -> {
-                // Make checkstyle include files in src/main/resources and src/test/resources, e.g., for whitespace checks.
+                // Make checkstyle include files in src/main/resources and src/test/resources, e.g.,
+                // for whitespace checks.
                 javaConvention.getSourceSets()
                         .forEach(sourceSet -> sourceSet.getResources().getSrcDirs()
                                 .forEach(resourceDir -> checkstyle.source(resourceDir.toString())));
@@ -64,7 +65,8 @@ public final class BaselineCheckstyle extends AbstractBaselinePlugin {
                 Stream.of("checks", "manifests", "scripts", "templates").forEach(checkstyle::source);
                 // Make sure java files are still included. This should match list in etc/eclipse-template/.checkstyle.
                 // Currently not enforced, but could be eventually.
-                Stream.of("java", "cfg", "coffee", "erb", "groovy", "handlebars", "json", "less", "pl", "pp", "sh", "xml")
+                Stream.of(
+                        "java", "cfg", "coffee", "erb", "groovy", "handlebars","json", "less","pl", "pp", "sh", "xml")
                         .forEach(extension -> checkstyle.include("**/*." + extension));
             });
         });
